@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level Equivalent Calculator</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .dedication {
+            text-align: center;
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 1px solid #ffe69c;
+        }
+
+        .dedication h1 {
+            margin: 0;
+            color: #664d03;
+        }
+
+        .dedication p {
+            margin-top: 10px;
+            font-style: italic;
+            color: #856404;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .row {
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        input, select {
+            width: 100px;
+            padding: 8px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            background-color: #0d6efd;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0b5ed7;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            font-size: 18px;
+            text-align: center;
+            background: #e7f3ff;
+            border-radius: 8px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="dedication">
+        <h1>Dedicated to Adievo (my lazy sister) ❤️</h1>
+        <p>
+            Because apparently calculating powers of two by hand was asking too much.
+            This calculator exists so Adievo can spend more time relaxing and less time doing math.
+        </p>
+    </div>
+
+    <h2>Level Equivalent Calculator</h2>
+
+    <div class="row">
+        <label for="conversionRatio"><strong>Conversion Ratio:</strong></label>
+        <select id="conversionRatio" onchange="regenerateLevels()">
+            <option value="2" selected>2 (two → one)</option>
+            <option value="3">3 (three → one)</option>
+            <option value="4">4 (four → one)</option>
+            <option value="5">5 (five → one)</option>
+            <option value="10">10 (ten → one)</option>
+        </select>
+    </div>
+
+    <div class="row">
+        <label for="maxLevelSelect"><strong>Max Level:</strong></label>
+        <select id="maxLevelSelect" onchange="regenerateLevels()">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+            <option value="25">25</option>
+        </select>
+    </div>
+
+    <p style="margin-top: 20px;"><strong>Enter how many items you have at each level:</strong></p>
+
+    <div id="levels"></div>
+
+    <div class="row">
+        <label for="targetLevel"><strong>Convert everything to Level:</strong></label>
+        <input type="number" id="targetLevel" value="2" min="1">
+    </div>
+
+    <button onclick="calculate()">
+        Calculate Total Equivalent
+    </button>
+
+    <div id="result"></div>
+
+</div>
+
+<script>
+    const levelsDiv = document.getElementById("levels");
+
+    function regenerateLevels() {
+        const maxLevel = Number(document.getElementById("maxLevelSelect").value);
+        levelsDiv.innerHTML = '';
+        
+        for (let level = 1; level <= maxLevel; level++) {
+            levelsDiv.innerHTML += `
+                <div class="row">
+                    <label>Level ${level}</label>
+                    <input
+                        type="number"
+                        id="level-${level}"
+                        value="0"
+                        min="0"
+                    >
+                </div>
+            `;
+        }
+    }
+
+    // Initialize levels on page load
+    regenerateLevels();
+
+    function calculate() {
+        const targetLevel = Number(
+            document.getElementById("targetLevel").value
+        );
+        const conversionRatio = Number(
+            document.getElementById("conversionRatio").value
+        );
+        const maxLevel = Number(
+            document.getElementById("maxLevelSelect").value
+        );
+
+        let totalEquivalent = 0;
+        let totalBaseValue = 0;
+
+        for (let level = 1; level <= maxLevel; level++) {
+            const levelInput = document.getElementById(`level-${level}`);
+            if (!levelInput) continue;
+            
+            const quantity = Number(levelInput.value);
+
+            totalEquivalent += quantity * Math.pow(conversionRatio, level - targetLevel);
+            totalBaseValue += quantity * Math.pow(conversionRatio, level - 1);
+        }
+
+        const resultDiv = document.getElementById("result");
+
+        resultDiv.style.display = "block";
+        resultDiv.innerHTML = `
+            <strong>Total Equivalent at Level ${targetLevel}:</strong>
+            <br><br>
+            ${totalEquivalent.toLocaleString()}
+            <br><br>
+            <small>
+                Total base value: ${totalBaseValue.toLocaleString()}
+                <br>
+                (Using conversion ratio: ${conversionRatio})
+            </small>
+        `;
+    }
+</script>
+
+</body>
+</html>
